@@ -8,11 +8,12 @@ export default function TicketsPage() {
   const router = useRouter();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userRole, setUserRole] = useState('USER');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // ✅ Fixed: fetchTickets is now INSIDE useEffect
   useEffect(() => {
     const checkAuthentication = () => {
       if (typeof window === 'undefined') return false;
@@ -30,10 +31,43 @@ export default function TicketsPage() {
         setUserRole(user.role || 'USER');
         setIsAuthenticated(true);
 
-        fetchTickets(user.email, user.role);
+        // ✅ fetchTickets is now defined INSIDE useEffect
+        const fetchTickets = async () => {
+          try {
+            const response = await fetch('/api/tickets/user', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ email: user.email, role: user.role })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+              setTickets(data.tickets);
+            } else {
+              if (response.status === 401) {
+                setError("Session expired. Please login again.");
+                localStorage.clear();
+                setTimeout(() => router.push('/login'), 2000);
+              } else {
+                setError(data.error || "Failed to load tickets");
+              }
+            }
+          } catch (err) {
+            setError("Network error. Please check your connection.");
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        // ✅ Call it
+        fetchTickets();
         return true;
       } catch (err) {
-        setError('Invalid user data. Please login again.');
+        setError("Invalid user data. Please login again.");
         return false;
       }
     };
@@ -41,52 +75,14 @@ export default function TicketsPage() {
     const isAuth = checkAuthentication();
 
     if (!isAuth) {
-      setError('You must be logged in to view tickets.');
+      setError("You must be logged in to view tickets.");
       setLoading(false);
       setTimeout(() => router.push('/login'), 3000);
     }
   }, [router]);
 
-  const fetchTickets = async (email, role) => {
-    try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        setError('No authentication token found.');
-        setTimeout(() => router.push('/login'), 2000);
-        return;
-      }
-
-      const response = await fetch('/api/tickets/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ email, role })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setTickets(data.tickets);
-      } else {
-        if (response.status === 401) {
-          setError('Session expired. Please login again.');
-          localStorage.clear();
-          setTimeout(() => router.push('/login'), 2000);
-        } else {
-          setError(data.error || 'Failed to load tickets');
-        }
-      }
-    } catch (err) {
-      setError('Network error. Please check your connection.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleLogout = () => {
-    if (confirm('Are you sure you want to logout?')) {
+    if (confirm("Are you sure you want to logout?")) {
       localStorage.clear();
       sessionStorage.clear();
       router.push('/login');

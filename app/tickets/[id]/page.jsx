@@ -41,7 +41,7 @@ export default function TicketDetailPage({ params }) {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        setError('You must be logged in to view this ticket.');
+        setError("You must be logged in to view this ticket.");
         setLoading(false);
         return;
       }
@@ -52,7 +52,7 @@ export default function TicketDetailPage({ params }) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        setError(errorData.error || 'Failed to load ticket');
+        setError(errorData.error || "Failed to load ticket");
         return;
       }
 
@@ -60,11 +60,11 @@ export default function TicketDetailPage({ params }) {
       if (data.success && data.data) {
         setTicket(data.data);
       } else {
-        setError('Invalid response format');
+        setError("Invalid response format");
       }
     } catch (err) {
-      setError('Network error. Please check your connection.');
-      console.error('Fetch error:', err);
+      setError("Network error. Please check your connection.");
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -95,10 +95,10 @@ export default function TicketDetailPage({ params }) {
         }));
         setComment('');
       } else {
-        alert(data.error || 'Failed to add comment');
+        alert(data.error || "Failed to add comment");
       }
     } catch (err) {
-      alert('Network error. Could not send comment.');
+      alert("Network error. Could not send comment.");
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +106,7 @@ export default function TicketDetailPage({ params }) {
 
   // ✅ Delete ticket (User or Admin)
   const handleDeleteTicket = async () => {
-    if (!window.confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) {
+    if (!window.confirm("Are you sure you want to delete this ticket? This action cannot be undone.")) {
       return;
     }
 
@@ -120,14 +120,14 @@ export default function TicketDetailPage({ params }) {
       });
 
       if (res.ok) {
-        alert('Ticket deleted successfully!');
+        alert("Ticket deleted successfully!");
         router.push('/tickets');
       } else {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || 'Delete failed');
+        alert(data.error || "Delete failed");
       }
     } catch (err) {
-      alert('Network error. Could not delete ticket.');
+      alert("Network error. Could not delete ticket.");
     } finally {
       setIsDeleting(false);
     }
@@ -136,7 +136,7 @@ export default function TicketDetailPage({ params }) {
   // ✅ Update ticket status
   const updateTicketStatus = async (newStatus) => {
     if (!currentUser) {
-      alert('You must be logged in to update the ticket.');
+      alert("You must be logged in to update the ticket.");
       return;
     }
 
@@ -155,10 +155,10 @@ export default function TicketDetailPage({ params }) {
       if (res.ok && data.data) {
         setTicket(data.data);
       } else {
-        alert(data.error || 'Update failed');
+        alert(data.error || "Update failed");
       }
     } catch (err) {
-      alert('Network error. Could not update status.');
+      alert("Network error. Could not update status.");
     }
   };
 
@@ -175,7 +175,7 @@ export default function TicketDetailPage({ params }) {
       }
       router.push('/login');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setIsDeleting(false);
     }
@@ -434,7 +434,7 @@ export default function TicketDetailPage({ params }) {
               <Link href="/tickets" style={styles.backButton}>
                 ← Back to Tickets
               </Link>
-              <Link href="/tickets/homl" style={styles.homeButton}>
+              <Link href="/" style={styles.homeButton}>
                 🏠 Home
               </Link>
             </div>

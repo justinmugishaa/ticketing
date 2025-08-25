@@ -194,21 +194,19 @@ export default function LoginPage() {
     if (message) setMessage('');
   };
 
-  // Updated handleSubmit function with comprehensive debugging
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
 
-    // ✅ Validate input
     if (!formData.email || !formData.password) {
-      setMessage('⚠️ Please fill in all fields.');
+      setMessage("⚠️ Please fill in all fields.");
       setIsLoading(false);
       return;
     }
 
     try {
-      console.log('🔐 Attempting login for:', formData.email);
+      console.log("🔐 Attempting login for:", formData.email);
       
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -217,7 +215,7 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
-      console.log('🔐 Login response:', { 
+      console.log("🔐 Login response:", { 
         ok: res.ok, 
         status: res.status, 
         success: data.success,
@@ -225,7 +223,6 @@ export default function LoginPage() {
         hasUser: !!data.user 
       });
 
-      // Update debug info
       setDebugInfo({
         loginAttempt: new Date().toISOString(),
         responseStatus: res.status,
@@ -239,29 +236,25 @@ export default function LoginPage() {
       });
 
       if (res.ok && data.success) {
-        // ✅ Validate token
         const token = data.token;
         if (!token) {
-          console.error('❌ No token received from server');
-          setMessage('❌ Login failed: No token received.');
+          console.error("❌ No token received from server");
+          setMessage("❌ Login failed: No token received.");
           setIsLoading(false);
           return;
         }
 
-        console.log('✅ Token received, length:', token.length);
+        console.log("✅ Token received, length:", token.length);
 
-        // ✅ Clear any existing data first
         localStorage.clear();
         sessionStorage.clear();
 
-        // ✅ Save token
         localStorage.setItem('auth_token', token);
-        console.log('✅ Token saved to localStorage');
+        console.log("✅ Token saved to localStorage");
 
-        // ✅ Validate and save user data
         if (!data.user || !data.user.email) {
-          console.error('❌ Invalid user data received:', data.user);
-          setMessage('❌ Login failed: Invalid user data.');
+          console.error("❌ Invalid user data received:", data.user);
+          setMessage("❌ Login failed: Invalid user data.");
           setIsLoading(false);
           return;
         }
@@ -276,27 +269,25 @@ export default function LoginPage() {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('user_role', user.role);
         
-        console.log('✅ User data saved:', user);
+        console.log("✅ User data saved:", user);
 
-        // ✅ Verify data was saved
         const savedToken = localStorage.getItem('auth_token');
         const savedUser = localStorage.getItem('user');
         
-        console.log('✅ Verification - savedToken exists:', !!savedToken);
-        console.log('✅ Verification - savedUser exists:', !!savedUser);
+        console.log("✅ Verification - savedToken exists:", !!savedToken);
+        console.log("✅ Verification - savedUser exists:", !!savedUser);
         
         if (!savedToken || !savedUser) {
-          console.error('❌ Failed to save data to localStorage');
-          setMessage('❌ Login failed: Could not save session data.');
+          console.error("❌ Failed to save data to localStorage");
+          setMessage("❌ Login failed: Could not save session data.");
           setIsLoading(false);
           return;
         }
 
-        setMessage('✅ Login successful! Redirecting...');
+        setMessage("✅ Login successful! Redirecting...");
 
-        // ✅ Redirect based on role with page refresh to ensure clean state
         setTimeout(() => {
-          console.log('🔄 Redirecting to:', user.role === 'ADMIN' ? '/admin' : '/tickets');
+          console.log("🔄 Redirecting to:", user.role === 'ADMIN' ? '/admin' : '/tickets');
           if (user.role === 'ADMIN') {
             window.location.href = '/admin';
           } else {
@@ -305,12 +296,12 @@ export default function LoginPage() {
         }, 1500);
         
       } else {
-        console.error('❌ Login failed:', data.error);
-        setMessage(`⚠️ ${data.error || 'Login failed. Please try again.'}`);
+        console.error("❌ Login failed:", data.error);
+        setMessage(`⚠️ ${data.error || "Login failed. Please try again."}`);
       }
     } catch (error) {
-      console.error('❌ Login network error:', error);
-      setMessage('🔌 Network error. Please try again.');
+      console.error("❌ Login network error:", error);
+      setMessage("🔌 Network error. Please try again.");
       setDebugInfo(prev => ({
         ...prev,
         networkError: error.message
@@ -320,7 +311,6 @@ export default function LoginPage() {
     }
   };
 
-  // Debug Panel Component
   const DebugPanel = () => {
     if (!debugInfo) return null;
     
@@ -338,20 +328,16 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* Debug Panel */}
       <DebugPanel />
       
       <div style={styles.container}>
-        {/* Background Effects */}
         <div style={styles.background} />
 
-        {/* Logo Section */}
         <div style={styles.logoContainer}>
           <h1 style={styles.logo}>🎫 HelpDesk Pro</h1>
           <p style={styles.subtitle}>Secure, fast, and user-friendly support</p>
         </div>
 
-        {/* Login Card */}
         <div style={styles.card}>
           <div style={styles.header}>
             <h2 style={styles.title}>Welcome Back</h2>
@@ -359,7 +345,6 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} style={styles.form}>
-            {/* Email Field */}
             <div style={styles.field}>
               <label style={styles.label}>Email Address *</label>
               <input
@@ -373,7 +358,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Password Field */}
             <div style={styles.field}>
               <label style={styles.label}>Password *</label>
               <input
@@ -387,7 +371,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -405,7 +388,6 @@ export default function LoginPage() {
               )}
             </button>
 
-            {/* Status Message */}
             {message && (
               <div
                 style={
@@ -419,7 +401,6 @@ export default function LoginPage() {
             )}
           </form>
 
-          {/* Footer */}
           <div style={styles.footer}>
             <p style={styles.footerText}>
               Don't have an account?{' '}
@@ -430,7 +411,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Global Styles */}
         <style jsx global>{`
           @keyframes rotate {
             from { transform: rotate(0deg); }
