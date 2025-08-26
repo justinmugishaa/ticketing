@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function TicketDetailPage({ params }) {
   const router = useRouter();
-  const resolvedParams = use(params); // ✅ Required for Next.js 15
+  const resolvedParams = use(params);
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,7 +28,8 @@ export default function TicketDetailPage({ params }) {
 
   const currentUser = getCurrentUser();
   const isAdmin = currentUser?.role === 'ADMIN';
-  const canDelete = currentUser && ticket && ticket.userId === currentUser.userId && ticket.status === 'OPEN';
+  const isOwner = currentUser && ticket && ticket.userId === currentUser.userId;
+  const canDelete = isOwner && ticket.status === 'OPEN';
 
   // ✅ Fetch ticket with comments
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function TicketDetailPage({ params }) {
     }
   };
 
-  // ✅ Add comment (Admin only)
+  // ✅ Add comment
   const handleAddComment = async () => {
     if (!comment.trim()) return;
 
@@ -104,7 +105,7 @@ export default function TicketDetailPage({ params }) {
     }
   };
 
-  // ✅ Delete ticket (User or Admin)
+  // ✅ Delete ticket
   const handleDeleteTicket = async () => {
     if (!window.confirm("Are you sure you want to delete this ticket? This action cannot be undone.")) {
       return;
@@ -162,7 +163,7 @@ export default function TicketDetailPage({ params }) {
     }
   };
 
-  // ✅ LOGOUT FUNCTION
+  // ✅ Logout
   const handleLogout = async () => {
     setIsDeleting(true);
     try {
@@ -181,45 +182,49 @@ export default function TicketDetailPage({ params }) {
     }
   };
 
-  // ✅ Get colors for badges
+  // ✅ Badge Colors
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'LOW': return { bg: 'rgba(209, 250, 229, 0.95)', color: '#065f46', border: '#10b981' };
-      case 'MEDIUM': return { bg: 'rgba(253, 230, 138, 0.95)', color: '#92400e', border: '#f59e0b' };
-      case 'HIGH': return { bg: 'rgba(254, 202, 202, 0.95)', color: '#991b1b', border: '#ef4444' };
-      case 'URGENT': return { bg: 'rgba(253, 164, 175, 0.95)', color: '#9f1239', border: '#f43f5e' };
-      default: return { bg: 'rgba(243, 244, 246, 0.95)', color: '#374151', border: '#9ca3af' };
+      case 'LOW': return { bg: '#dcfce7', color: '#166534', border: '#22c55e' };
+      case 'MEDIUM': return { bg: '#fef3c7', color: '#92400e', border: '#f59e0b' };
+      case 'HIGH': return { bg: '#fee2e2', color: '#b91c1c', border: '#ef4444' };
+      case 'URGENT': return { bg: '#fecaca', color: '#9f1239', border: '#f43f5e' };
+      default: return { bg: '#f3f4f6', color: '#374151', border: '#9ca3af' };
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'OPEN': return { bg: 'rgba(191, 219, 254, 0.95)', color: '#1e40af', border: '#3b82f6' };
-      case 'IN_PROGRESS': return { bg: 'rgba(253, 230, 138, 0.95)', color: '#92400e', border: '#f59e0b' };
-      case 'CLOSED': return { bg: 'rgba(209, 250, 229, 0.95)', color: '#065f46', border: '#10b981' };
-      default: return { bg: 'rgba(243, 244, 246, 0.95)', color: '#374151', border: '#9ca3af' };
+      case 'OPEN': return { bg: '#eff6ff', color: '#1e40af', border: '#3b82f6' };
+      case 'IN_PROGRESS': return { bg: '#fffbeb', color: '#92400e', border: '#f59e0b' };
+      case 'CLOSED': return { bg: '#dcfce7', color: '#166534', border: '#22c55e' };
+      default: return { bg: '#f3f4f6', color: '#374151', border: '#9ca3af' };
     }
   };
 
+  // ✅ Improved Styles (Clean, Modern, No Scroll)
   const styles = {
     container: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%)',
-      padding: '1rem',
-      fontFamily: "'Poppins', sans-serif",
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      padding: '20px 16px',
+      fontFamily: "'Inter', 'Poppins', sans-serif",
+      display: 'flex',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
     },
     card: {
-      maxWidth: '900px',
-      margin: '0 auto',
-      background: 'rgba(255, 255, 255, 0.98)',
-      borderRadius: '12px',
+      width: '100%',
+      maxWidth: '800px',
+      background: 'white',
+      borderRadius: '16px',
       overflow: 'hidden',
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03)',
-      border: '1px solid rgba(255, 255, 255, 0.5)',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+      border: '1px solid #e2e8f0',
     },
     header: {
-      background: 'linear-gradient(120deg, #6366f1 0%, #4f46e5 100%)',
-      padding: '1.5rem',
+      background: 'linear-gradient(120deg, #4f46e5, #7c3aed)',
+      padding: '24px',
       color: 'white',
       position: 'relative',
     },
@@ -227,22 +232,22 @@ export default function TicketDetailPage({ params }) {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: '1rem',
+      marginBottom: '16px',
     },
     navigationButtons: {
       display: 'flex',
-      gap: '0.5rem',
+      gap: '12px',
       alignItems: 'center',
     },
     backButton: {
       display: 'inline-flex',
       alignItems: 'center',
-      padding: '0.5rem 1rem',
+      padding: '8px 16px',
       background: 'rgba(255, 255, 255, 0.2)',
       color: 'white',
-      borderRadius: '6px',
+      borderRadius: '8px',
       textDecoration: 'none',
-      fontSize: '0.85rem',
+      fontSize: '14px',
       fontWeight: '500',
       border: '1px solid rgba(255, 255, 255, 0.3)',
       transition: 'all 0.2s ease',
@@ -250,12 +255,12 @@ export default function TicketDetailPage({ params }) {
     homeButton: {
       display: 'inline-flex',
       alignItems: 'center',
-      padding: '0.5rem 1rem',
+      padding: '8px 16px',
       background: 'rgba(16, 185, 129, 0.9)',
       color: 'white',
-      borderRadius: '6px',
+      borderRadius: '8px',
       textDecoration: 'none',
-      fontSize: '0.85rem',
+      fontSize: '14px',
       fontWeight: '500',
       border: '1px solid rgba(255, 255, 255, 0.3)',
       transition: 'all 0.2s ease',
@@ -264,131 +269,133 @@ export default function TicketDetailPage({ params }) {
     logoutButton: {
       display: 'inline-flex',
       alignItems: 'center',
-      padding: '0.5rem 1rem',
+      padding: '8px 16px',
       background: 'rgba(239, 68, 68, 0.9)',
       color: 'white',
-      borderRadius: '6px',
+      borderRadius: '8px',
       border: 'none',
-      fontSize: '0.85rem',
+      fontSize: '14px',
       fontWeight: '500',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
       boxShadow: '0 2px 4px rgba(239, 68, 68, 0.3)',
     },
     content: {
-      padding: '1.5rem',
+      padding: '24px',
     },
     section: {
-      marginBottom: '1.5rem',
-      background: 'rgba(255, 255, 255, 0.7)',
-      borderRadius: '8px',
-      padding: '1rem',
-      border: '1px solid rgba(229, 231, 235, 0.8)',
-      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+      marginBottom: '24px',
+      background: '#f8fafc',
+      borderRadius: '12px',
+      padding: '16px',
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 1px 6px rgba(0, 0, 0, 0.05)',
     },
     badge: {
       display: 'inline-flex',
       alignItems: 'center',
-      padding: '0.4rem 0.8rem',
-      borderRadius: '20px',
-      fontSize: '0.75rem',
+      padding: '6px 12px',
+      borderRadius: '24px',
+      fontSize: '12px',
       fontWeight: '600',
       border: '1px solid',
-      marginRight: '0.5rem',
+      marginRight: '8px',
+      textTransform: 'uppercase',
     },
     title: {
-      fontSize: '1.5rem',
+      fontSize: '24px',
       fontWeight: '700',
-      margin: '0 0 0.25rem 0',
-      textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+      margin: '0 0 4px 0',
+      color: 'white',
+      textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
     },
     subtitle: {
-      opacity: 0.95,
+      opacity: 0.9,
       margin: 0,
-      fontSize: '0.9rem',
+      fontSize: '14px',
       fontWeight: '400',
-      textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+      color: 'rgba(255, 255, 255, 0.9)',
     },
     sectionTitle: {
-      fontSize: '1.1rem',
+      fontSize: '16px',
       fontWeight: '600',
-      marginBottom: '0.8rem',
-      color: '#1f2937',
-      paddingBottom: '0.4rem',
-      borderBottom: '2px solid rgba(79, 70, 229, 0.2)',
+      marginBottom: '12px',
+      color: '#1e293b',
+      paddingBottom: '6px',
+      borderBottom: '2px solid #e2e8f0',
     },
     textContent: {
-      padding: '1rem',
-      background: 'rgba(255, 255, 255, 0.9)',
+      padding: '12px',
+      background: 'white',
       borderRadius: '8px',
-      border: '1px solid rgba(229, 231, 235, 0.8)',
+      border: '1px solid #e2e8f0',
       whiteSpace: 'pre-wrap',
       lineHeight: '1.6',
-      fontSize: '0.95rem',
-      color: '#374151',
-      maxHeight: '150px',
+      fontSize: '14px',
+      color: '#334155',
+      maxHeight: '120px',
       overflowY: 'auto',
       boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.05)',
     },
     infoBox: {
-      padding: '0.8rem',
-      background: 'rgba(255, 255, 255, 0.9)',
+      padding: '12px',
+      background: 'white',
       borderRadius: '8px',
-      border: '1px solid rgba(229, 231, 235, 0.8)',
+      border: '1px solid #e2e8f0',
       boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.05)',
     },
     commentBox: {
-      padding: '0.8rem',
-      background: 'rgba(240, 249, 255, 0.9)',
+      padding: '12px',
+      background: 'white',
       borderRadius: '8px',
-      border: '1px solid rgba(59, 130, 246, 0.2)',
-      marginBottom: '0.5rem',
+      border: '1px solid #bfdbfe',
+      marginBottom: '8px',
+      boxShadow: '0 1px 4px rgba(59, 130, 246, 0.1)',
     },
     commentAuthor: {
       fontWeight: '600',
       color: '#1e40af',
-      fontSize: '0.9rem',
+      fontSize: '13px',
     },
     commentContent: {
-      margin: '0.25rem 0 0 0',
-      color: '#374151',
-      fontSize: '0.9rem',
+      margin: '4px 0 0 0',
+      color: '#334155',
+      fontSize: '14px',
       lineHeight: '1.5',
     },
     commentMeta: {
-      fontSize: '0.8rem',
-      color: '#6b7280',
-      marginTop: '0.25rem',
+      fontSize: '12px',
+      color: '#64748b',
+      marginTop: '4px',
     },
     deleteButton: {
       background: '#ef4444',
       color: 'white',
-      padding: '0.75rem 1.5rem',
+      padding: '10px 16px',
       border: 'none',
-      borderRadius: '6px',
-      fontSize: '0.9rem',
+      borderRadius: '8px',
+      fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
     },
-    cancelButton: {
-      background: '#6b7280',
-      color: 'white',
-      padding: '0.75rem 1.5rem',
+    actionButton: {
+      padding: '8px 16px',
       border: 'none',
-      borderRadius: '6px',
-      fontSize: '0.9rem',
-      fontWeight: '600',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '500',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
     },
   };
 
   if (loading) {
     return (
       <div style={styles.container}>
-        <div style={{ ...styles.card, padding: '2rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1rem', color: '#4b5563' }}>Loading ticket...</div>
+        <div style={{ ...styles.card, textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '16px', color: '#64748b' }}>Loading ticket...</div>
         </div>
       </div>
     );
@@ -397,8 +404,8 @@ export default function TicketDetailPage({ params }) {
   if (error) {
     return (
       <div style={styles.container}>
-        <div style={{ ...styles.card, padding: '2rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1rem', color: '#dc2626', marginBottom: '1rem' }}>
+        <div style={{ ...styles.card, textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '16px', color: '#dc2626', marginBottom: '16px' }}>
             {error}
           </div>
           <Link href="/tickets" style={styles.backButton}>
@@ -412,8 +419,8 @@ export default function TicketDetailPage({ params }) {
   if (!ticket) {
     return (
       <div style={styles.container}>
-        <div style={{ ...styles.card, padding: '2rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '1rem', color: '#4b5563' }}>Ticket not found</div>
+        <div style={{ ...styles.card, textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '16px', color: '#64748b' }}>Ticket not found</div>
           <Link href="/tickets" style={styles.backButton}>
             ← Back to Tickets
           </Link>
@@ -432,7 +439,7 @@ export default function TicketDetailPage({ params }) {
           <div style={styles.headerTop}>
             <div style={styles.navigationButtons}>
               <Link href="/tickets" style={styles.backButton}>
-                ← Back to Tickets
+                ← Back
               </Link>
               <Link href="/" style={styles.homeButton}>
                 🏠 Home
@@ -457,12 +464,26 @@ export default function TicketDetailPage({ params }) {
         <div style={styles.content}>
           {/* Status and Priority */}
           <div style={styles.section}>
-            <div>
-              <div style={{ ...styles.badge, background: statusStyle.bg, color: statusStyle.color, borderColor: statusStyle.border }}>
-                Status: {ticket.status.replace('_', ' ')}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div
+                style={{
+                  ...styles.badge,
+                  background: statusStyle.bg,
+                  color: statusStyle.color,
+                  borderColor: statusStyle.border,
+                }}
+              >
+                {ticket.status.replace('_', ' ')}
               </div>
-              <div style={{ ...styles.badge, background: priorityStyle.bg, color: priorityStyle.color, borderColor: priorityStyle.border }}>
-                Priority: {ticket.priority}
+              <div
+                style={{
+                  ...styles.badge,
+                  background: priorityStyle.bg,
+                  color: priorityStyle.color,
+                  borderColor: priorityStyle.border,
+                }}
+              >
+                {ticket.priority}
               </div>
             </div>
           </div>
@@ -470,9 +491,7 @@ export default function TicketDetailPage({ params }) {
           {/* Description */}
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>Description</h3>
-            <div style={styles.textContent}>
-              {ticket.description}
-            </div>
+            <div style={styles.textContent}>{ticket.description}</div>
           </div>
 
           {/* Reporter */}
@@ -480,8 +499,12 @@ export default function TicketDetailPage({ params }) {
             <div style={styles.section}>
               <h3 style={styles.sectionTitle}>Reporter</h3>
               <div style={styles.infoBox}>
-                <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem', color: '#1f2937' }}>{ticket.user.name}</p>
-                <p style={{ margin: '0.25rem 0 0 0', color: '#4b5563', fontSize: '0.85rem' }}>{ticket.user.email}</p>
+                <p style={{ margin: 0, fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>
+                  {ticket.user.name}
+                </p>
+                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '13px' }}>
+                  {ticket.user.email}
+                </p>
               </div>
             </div>
           )}
@@ -502,24 +525,37 @@ export default function TicketDetailPage({ params }) {
                 </div>
               ))
             ) : (
-              <p>No comments yet.</p>
+              <p style={{ color: '#64748b', fontSize: '14px' }}>No comments yet.</p>
             )}
 
-            {/* Admin Add Comment */}
-            {isAdmin && (
-              <div style={{ marginTop: '1rem' }}>
+            {/* Add Comment */}
+            {(isOwner || isAdmin) && (
+              <div style={{ marginTop: '16px' }}>
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Add a comment..."
-                  style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    resize: 'vertical',
+                    minHeight: '80px',
+                  }}
                 />
                 <button
                   onClick={handleAddComment}
                   disabled={isSubmitting || !comment.trim()}
-                  style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px' }}
+                  style={{
+                    ...styles.actionButton,
+                    background: '#3b82f6',
+                    color: 'white',
+                    marginTop: '8px',
+                  }}
                 >
-                  {isSubmitting ? 'Sending...' : 'Add Comment'}
+                  {isSubmitting ? 'Sending...' : '💬 Add Comment'}
                 </button>
               </div>
             )}
@@ -538,49 +574,45 @@ export default function TicketDetailPage({ params }) {
             </div>
           )}
 
-          {/* Status Actions */}
-          {ticket.status !== 'CLOSED' && 
-           (currentUser && (currentUser.role === 'ADMIN' || ticket.userId === currentUser.userId)) && (
+          {/* Admin Actions */}
+          {isAdmin && (
             <div style={styles.section}>
-              <h3 style={styles.sectionTitle}>Status Actions</h3>
-              <div>
+              <h3 style={styles.sectionTitle}>Admin Actions</h3>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 {ticket.status === 'OPEN' && (
                   <button
                     onClick={() => updateTicketStatus('IN_PROGRESS')}
                     style={{
-                      ...styles.button,
+                      ...styles.actionButton,
                       background: '#f59e0b',
                       color: 'white',
-                      boxShadow: '0 2px 4px rgba(245, 158, 11, 0.3)',
                     }}
                   >
-                    Start Progress
+                    ▶️ Start Progress
                   </button>
                 )}
                 {ticket.status === 'IN_PROGRESS' && (
                   <button
                     onClick={() => updateTicketStatus('CLOSED')}
                     style={{
-                      ...styles.button,
+                      ...styles.actionButton,
                       background: '#10b981',
                       color: 'white',
-                      boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)',
                     }}
                   >
-                    Close Ticket
+                    ✅ Close Ticket
                   </button>
                 )}
-                {ticket.status !== 'OPEN' && (
+                {ticket.status === 'CLOSED' && (
                   <button
                     onClick={() => updateTicketStatus('OPEN')}
                     style={{
-                      ...styles.button,
+                      ...styles.actionButton,
                       background: '#3b82f6',
                       color: 'white',
-                      boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)',
                     }}
                   >
-                    Reopen Ticket
+                    🔁 Reopen Ticket
                   </button>
                 )}
               </div>

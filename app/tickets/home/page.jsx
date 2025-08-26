@@ -48,7 +48,7 @@ export default function HomePage() {
                 onClick={() => {
                   localStorage.removeItem('auth_token');
                   setIsLoggedIn(false);
-                  router.push('/');
+                  router.push('/login');
                 }}
               >
                 🔓 Logout
