@@ -79,7 +79,7 @@ export default function TicketsPage() {
       setLoading(false);
       setTimeout(() => router.push('/login'), 3000);
     }
-  }, [router]); // ✅ Only dependency is router
+  }, [router]);
 
   const handleLogout = () => {
     if (confirm("Are you sure you want to logout?")) {
@@ -286,7 +286,7 @@ export default function TicketsPage() {
       <div style={styles.container}>
         <div style={styles.navigation}>
           <div>
-            <Link href="/tickets/homl" style={{ ...styles.navButton, ...styles.homeButton }}>
+            <Link href="/" style={{ ...styles.navButton, ...styles.homeButton }}>
               🏠 Home
             </Link>
           </div>
@@ -325,10 +325,10 @@ export default function TicketsPage() {
     <div style={styles.container}>
       <div style={styles.navigation}>
         <div>
-          <Link href="/tickets/homl" style={{ ...styles.navButton, ...styles.homeButton }}>
+          <Link href="/" style={{ ...styles.navButton, ...styles.homeButton }}>
             🏠 Home
           </Link>
-          <span>✅ {userEmail} ({userRole})</span>
+          <span style={{ marginLeft: '1rem', color: '#374151' }}>✅ {userEmail} ({userRole})</span>
         </div>
         <div>
           <Link href="/tickets/create" style={{ ...styles.navButton, ...styles.primaryButton }}>
