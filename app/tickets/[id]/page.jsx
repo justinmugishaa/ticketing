@@ -441,7 +441,7 @@ export default function TicketDetailPage({ params }) {
               <Link href="/tickets" style={styles.backButton}>
                 ← Back
               </Link>
-              <Link href="/" style={styles.homeButton}>
+              <Link href="/tickets/homl" style={styles.homeButton}>
                 🏠 Home
               </Link>
             </div>
